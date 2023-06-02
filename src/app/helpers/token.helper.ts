@@ -21,4 +21,5 @@ export class TokenHelper {
       throw new BadRequestException('Invalid token: ' + e.message);
     }
   }
+
 }

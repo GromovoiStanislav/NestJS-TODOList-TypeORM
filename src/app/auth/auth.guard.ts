@@ -8,7 +8,10 @@ import { TokenHelper } from '../helpers/token.helper';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly tokenHelper: TokenHelper) {}
+
+  constructor(
+    private readonly tokenHelper: TokenHelper
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
     const [request, authorization] = [
@@ -16,7 +19,9 @@ export class AuthGuard implements CanActivate {
       context.switchToHttp().getRequest().headers['authorization'],
     ];
 
-    if (!authorization) throw new UnauthorizedException();
+    if (!authorization) {
+      throw new UnauthorizedException();
+    }
 
     const token = authorization.split(' ').pop();
 
@@ -27,7 +32,9 @@ export class AuthGuard implements CanActivate {
     }
 
     const payload = this.tokenHelper.decode(token);
-    if (!payload) throw new UnauthorizedException();
+    if (!payload) {
+      throw new UnauthorizedException();
+    }
 
     const { user } = payload;
     request.user = user;

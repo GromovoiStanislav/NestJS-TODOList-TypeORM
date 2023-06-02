@@ -7,14 +7,16 @@ import { ProjectsEntity } from "./projects.entity";
 
 @Injectable()
 export class ProjectsService {
+
   constructor(
     @InjectRepository(ProjectsEntity)
     private readonly projectsRepository: Repository<ProjectsEntity>
   ) {
   }
 
+
   async index(user: IUser) {
-    return await this.projectsRepository
+    return this.projectsRepository
       .createQueryBuilder("projects")
       .select(["projects.id", "projects.name"])
       .addSelect([
@@ -25,40 +27,44 @@ export class ProjectsService {
       ])
       .leftJoin("projects.tasks", "tasks")
       .where("projects.userId = :userId", { userId: user.id })
+      //.where({ userId: user.id })
       .orderBy("projects.createdAt", "DESC")
       .addOrderBy("tasks.createdAt", "ASC")
       .getMany();
   }
 
+
   async store(data: StoreProjectsDto, user: IUser) {
     const project = this.projectsRepository.create(data);
     project.userId = user.id;
-
-    return await this.projectsRepository.save(project);
+    return this.projectsRepository.save(project);
   }
+
 
   async show(id: string) {
-    return await this.findByIdOrFail(id);
+    return this.findByIdOrFail(id);
   }
+
 
   async update(id: string, data: UpdateProjectsDto) {
-    const user = await this.projectsRepository.findOneOrFail({ where: { id } });
-
-    this.projectsRepository.merge(user, data);
-    return await this.projectsRepository.save(user);
+    const project = await this.findByIdOrFail(id)
+    this.projectsRepository.merge(project, data);
+    return this.projectsRepository.save(project);
   }
+
 
   async destroy(id: string) {
     await this.findByIdOrFail(id);
-
     await this.projectsRepository.softDelete({ id });
   }
 
-  private async findByIdOrFail(id: string) {
-    try {
-      return await this.projectsRepository.findOneOrFail({ where: { id } });
-    } catch (e) {
-      throw new NotFoundException(e.message);
+
+  async findByIdOrFail(id: string) {
+    const project = await this.projectsRepository.findOneBy({ id });
+    if (!project) {
+      throw new NotFoundException("Not found...");
     }
+    return project;
   }
+
 }

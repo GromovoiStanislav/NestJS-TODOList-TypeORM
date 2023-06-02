@@ -1,15 +1,17 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsUUID, MaxLength } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from "class-validator";
 
 export class StoreTasksDto {
   @IsNotEmpty()
+  @IsString()
   @MaxLength(255)
   @ApiProperty()
   description: string;
 
   @IsOptional()
+  @IsIn([0, 1])
   @ApiPropertyOptional()
-  done: number;
+  done?: number;
 
   @IsNotEmpty()
   @IsUUID()
@@ -19,18 +21,18 @@ export class StoreTasksDto {
 
 export class UpdateTasksDto {
   @IsOptional()
-  @IsNotEmpty()
+  @IsString()
   @MaxLength(255)
   @ApiPropertyOptional()
-  description: string;
+  description?: string;
 
   @IsOptional()
+  @IsIn([0, 1])
   @ApiPropertyOptional()
-  done: number;
+  done?: number;
 
   @IsOptional()
-  @IsNotEmpty()
   @IsUUID()
   @ApiPropertyOptional()
-  projectId: string;
+  projectId?: string;
 }

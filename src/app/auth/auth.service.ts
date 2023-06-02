@@ -21,7 +21,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     const token = jsonwebtoken.sign(
-      { user: user.id },
+      { user: { id: user.id } },
       this.configService.get("SECRET_KEY"),
       { expiresIn: "1d" }
     );
